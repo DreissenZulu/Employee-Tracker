@@ -1,0 +1,23 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "description": "CLI employee CMS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DreissenZulu/Employee-Tracker.git"
+  },
+  "author": "DreissenZulu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DreissenZulu/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/DreissenZulu/Employee-Tracker#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.17.1"
+  }
+}
