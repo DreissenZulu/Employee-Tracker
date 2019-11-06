@@ -47,7 +47,7 @@ async function showEmployeeSummary() {
 async function addEmployee() {
     let positions = await db.query('SELECT id, title FROM role');
     let managers = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS Manager FROM employee');
-    managers.unshift({id: null, Manager: "None"});
+    managers.unshift({ id: null, Manager: "None" });
 
     inquirer
         .prompt([{
@@ -76,17 +76,43 @@ async function addEmployee() {
             let positionDetails = positions.find(obj => obj.title === answers.role);
             let manager = managers.find(obj => obj.Manager === answers.manager);
             db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)",
-            [[answers.firstName, answers.lastName, positionDetails.id, manager.id]]);
+                [[answers.firstName, answers.lastName, positionDetails.id, manager.id]]);
             console.log(`${answers.firstName} was added to the employee database!`);
             runApp();
         });
 };
 
 async function removeEmployee() {
+    let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
+    employees.push({id: null, name: "Cancel"});
 
+    inquirer
+        .prompt([
+            {
+                name: "employeeName",
+                type: "list",
+                message: "Remove which employee?",
+                choices: employees.map(obj => obj.name)
+            }
+        ]).then((response) => {
+            if (response.employeeName != "Cancel") {
+                let unluckyEmployee = employees.find(obj => obj.name === response.employeeName);
+                db.query("DELETE FROM employee WHERE id=?", unluckyEmployee.id);
+                console.log(`${response.employeeName} was let go...`);
+            }
+            runApp();
+        })
 };
 
 async function updateManager() {
+
+};
+
+async function addRole() {
+
+};
+
+async function addDepartment() {
 
 };
 
@@ -112,14 +138,17 @@ function runApp() {
                 case "Add A New Employee":
                     addEmployee();
                     break;
-                case "Update Employee Info":
-
+                case "Update Employee Manager":
+                    updateManager();
                     break;
                 case "Remove An Employee":
+                    removeEmployee();
                     break;
                 case "Add A New Role":
+                    addRole();
                     break;
                 case "Add A New Department":
+                    addDepartment();
                     break;
             }
         });
