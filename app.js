@@ -187,7 +187,38 @@ async function updateRole() {
 
 // Add a new role to the database
 async function addRole() {
+    let departments = await db.query('SELECT id, name FROM department');
 
+    inquirer.prompt([
+        {
+            name: "roleName",
+            type: "input",
+            message: "Enter new role title:",
+            validate: confirmStringInput
+        },
+        {
+            name: "salaryNum",
+            type: "input",
+            message: "Enter role's salary:",
+            validate: input => {
+                if (!isNaN(input)) {
+                    return true;
+                }
+                return "Please enter a valid number."
+            }
+        },
+        {
+            name: "roleDepartment",
+            type: "list",
+            message: "Choose the role's department:",
+            choices: departments.map(obj => obj.name)
+        }
+    ]).then(answers => {
+        let depID = departments.find(obj => obj.name === answers.roleDepartment).id
+        db.query("INSERT INTO role (title, salary, department_id) VALUES (?)", [[answers.roleName, answers.salaryNum, depID]]);
+        console.log("\x1b[32m", `${answers.roleName} was added. Department: ${answers.roleDepartment}`);
+        runApp();
+    })
 };
 
 // Add a new department to the database
