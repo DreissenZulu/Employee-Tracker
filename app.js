@@ -47,10 +47,10 @@ async function showEmployeeSummary() {
 
 // Called inside inquirers to check that the user isn't just trying to fill spots with empty space
 async function confirmStringInput (input) {
-    if (input.trim() != "") {
+    if ((input.trim() != "") && (input.trim().length <= 30)) {
         return true;
     }
-    return "Invalid input."
+    return "Invalid input. Please limit your input to 30 characters or less."
 };
 
 // Adds a new employee after asking for name, role, and manager
@@ -88,7 +88,7 @@ async function addEmployee() {
         let positionDetails = positions.find(obj => obj.title === answers.role);
         let manager = managers.find(obj => obj.Manager === answers.manager);
         db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)", [[answers.firstName.trim(), answers.lastName.trim(), positionDetails.id, manager.id]]);
-        console.log(`${answers.firstName} was added to the employee database!`);
+        console.log("\x1b[32m", `${answers.firstName} was added to the employee database!`);
         runApp();
     });
 };
@@ -109,7 +109,7 @@ async function removeEmployee() {
         if (response.employeeName != "Cancel") {
             let unluckyEmployee = employees.find(obj => obj.name === response.employeeName);
             db.query("DELETE FROM employee WHERE id=?", unluckyEmployee.id);
-            console.log(`${response.employeeName} was let go...`);
+            console.log("\x1b[32m", `${response.employeeName} was let go...`);
         }
         runApp();
     })
@@ -150,11 +150,15 @@ async function updateManager() {
             let empID = employees.find(obj => obj.name === employeeInfo.empName).id
             let mgID = managers.find(obj => obj.name === managerInfo.mgName).id
             db.query("UPDATE employee SET manager_id=? WHERE id=?", [mgID, empID]);
-            console.log(`${employeeInfo.empName} now reports to ${managerInfo.mgName}`);
+            console.log("\x1b[32m", `${employeeInfo.empName} now reports to ${managerInfo.mgName}`);
             runApp();
         })
     })
 };
+
+async function updateRole() {
+    
+}
 
 // Add a new role to the database
 async function addRole() {
@@ -166,6 +170,31 @@ async function addDepartment() {
 
 };
 
+function editEmployeeOptions() {
+    inquirer.prompt({
+        name: "editChoice",
+        type: "list",
+        message: "What would you like to update?",
+        choices: [
+            "Change Employee Role",
+            "Change Employee Manager",
+            "Return To Main Menu"
+        ]
+    }).then(response => {
+        switch (response.editChoice) {
+            case "Change Employee Role":
+                updateRole();
+                break;
+            case "Change Employee Manager":
+                updateManager();
+                break;
+            case "Return To Main Menu":
+                runApp();
+                break;
+        }
+    })
+}
+
 // Main interface loop. Called after pretty much every function completes
 function runApp() {
     inquirer.prompt({
@@ -175,12 +204,12 @@ function runApp() {
         choices: [
             "View All Employees",
             "Add A New Employee",
-            "Update Employee Manager",
+            "Edit Employeee Info",
             "Remove An Employee",
             "Add A New Role",
             "Add A New Department"
         ]
-    }).then((responses) => {
+    }).then(responses => {
         switch (responses.mainmenu) {
             case "View All Employees":
                 showEmployeeSummary();
@@ -188,8 +217,8 @@ function runApp() {
             case "Add A New Employee":
                 addEmployee();
                 break;
-            case "Update Employee Manager":
-                updateManager();
+            case "Edit Employeee Info":
+                editEmployeeOptions();
                 break;
             case "Remove An Employee":
                 removeEmployee();
