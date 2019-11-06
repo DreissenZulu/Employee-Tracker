@@ -37,6 +37,7 @@ const db = new Database({
 });
 
 async function showEmployeeSummary() {
+    console.log(' ');
     await db.query('SELECT e.id, e.first_name AS First_Name, e.last_name AS Last_Name, title AS Title, salary AS Salary, name AS Department, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role r ON e.role_id = r.id INNER JOIN department d ON r.department_id = d.id', (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -50,33 +51,33 @@ async function addEmployee() {
     managers.unshift({ id: null, Manager: "None" });
 
     inquirer
-        .prompt([{
-            name: "firstName",
-            type: "input",
-            message: "Enter employee's first name:"
-        },
-        {
-            name: "lastName",
-            type: "input",
-            message: "Enter employee's last name:"
-        },
-        {
-            name: "role",
-            type: "list",
-            message: "Choose employee role:",
-            choices: positions.map(obj => obj.title)
-        },
-        {
-            name: "manager",
-            type: "list",
-            message: "Choose the employee's manager:",
-            choices: managers.map(obj => obj.Manager)
-        }
+        .prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "Enter employee's first name:"
+            },
+            {
+                name: "lastName",
+                type: "input",
+                message: "Enter employee's last name:"
+            },
+            {
+                name: "role",
+                type: "list",
+                message: "Choose employee role:",
+                choices: positions.map(obj => obj.title)
+            },
+            {
+                name: "manager",
+                type: "list",
+                message: "Choose the employee's manager:",
+                choices: managers.map(obj => obj.Manager)
+            }
         ]).then((answers) => {
             let positionDetails = positions.find(obj => obj.title === answers.role);
             let manager = managers.find(obj => obj.Manager === answers.manager);
-            db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)",
-                [[answers.firstName, answers.lastName, positionDetails.id, manager.id]]);
+            db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)", [[answers.firstName, answers.lastName, positionDetails.id, manager.id]]);
             console.log(`${answers.firstName} was added to the employee database!`);
             runApp();
         });
@@ -84,7 +85,7 @@ async function addEmployee() {
 
 async function removeEmployee() {
     let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
-    employees.push({id: null, name: "Cancel"});
+    employees.push({ id: null, name: "Cancel" });
 
     inquirer
         .prompt([
@@ -105,7 +106,14 @@ async function removeEmployee() {
 };
 
 async function updateManager() {
-
+    inquirer
+    .prompt([
+        {
+            name: "targetEmployee",
+            type: "list",
+            message: ""
+        }
+    ])
 };
 
 async function addRole() {
@@ -125,7 +133,7 @@ function runApp() {
             choices: [
                 "View All Employees",
                 "Add A New Employee",
-                "Update Employee Info",
+                "Update Employee Manager",
                 "Remove An Employee",
                 "Add A New Role",
                 "Add A New Department"
