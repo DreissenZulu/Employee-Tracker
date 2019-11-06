@@ -45,6 +45,15 @@ async function showEmployeeSummary() {
     });
 };
 
+// Called inside inquirers to check that the user isn't just trying to fill spots with empty space
+async function confirmStringInput (input) {
+    if (input.trim() != "") {
+        return true;
+    }
+    return "Invalid input."
+};
+
+// Adds a new employee after asking for name, role, and manager
 async function addEmployee() {
     let positions = await db.query('SELECT id, title FROM role');
     let managers = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS Manager FROM employee');
@@ -54,12 +63,14 @@ async function addEmployee() {
         {
             name: "firstName",
             type: "input",
-            message: "Enter employee's first name:"
+            message: "Enter employee's first name:",
+            validate: confirmStringInput
         },
         {
             name: "lastName",
             type: "input",
-            message: "Enter employee's last name:"
+            message: "Enter employee's last name:",
+            validate: confirmStringInput
         },
         {
             name: "role",
@@ -76,12 +87,13 @@ async function addEmployee() {
     ]).then(answers => {
         let positionDetails = positions.find(obj => obj.title === answers.role);
         let manager = managers.find(obj => obj.Manager === answers.manager);
-        db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)", [[answers.firstName, answers.lastName, positionDetails.id, manager.id]]);
+        db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)", [[answers.firstName.trim(), answers.lastName.trim(), positionDetails.id, manager.id]]);
         console.log(`${answers.firstName} was added to the employee database!`);
         runApp();
     });
 };
 
+// Removes an employee from the database
 async function removeEmployee() {
     let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
     employees.push({ id: null, name: "Cancel" });
@@ -103,6 +115,7 @@ async function removeEmployee() {
     })
 };
 
+// Change the employee's manager
 async function updateManager() {
     let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
     employees.push({ id: null, name: "Cancel" });
@@ -143,14 +156,17 @@ async function updateManager() {
     })
 };
 
+// Add a new role to the database
 async function addRole() {
 
 };
 
+// Add a new department to the database
 async function addDepartment() {
 
 };
 
+// Main interface loop. Called after pretty much every function completes
 function runApp() {
     inquirer.prompt({
         name: "mainmenu",
@@ -187,6 +203,8 @@ function runApp() {
         }
     });
 }
+
+console.log("_______  __   __  _______    _______  ______    _______  _______  ___   _  _______  ______\n|       ||  |_|  ||       |  |       ||    _ |  |   _   ||       ||   | | ||       ||    _ |\n|       ||       ||  _____|  |_     _||   | ||  |  |_|  ||       ||   |_| ||    ___||   | ||\n|       ||       || |_____     |   |  |   |_||_ |       ||       ||      _||   |___ |   |_||_ \n|      _||       ||_____  |    |   |  |    __  ||       ||      _||     |_ |    ___||    __  |\n|     |_ | ||_|| | _____| |    |   |  |   |  | ||   _   ||     |_ |    _  ||   |___ |   |  | |\n|_______||_|   |_||_______|    |___|  |___|  |_||__| |__||_______||___| |_||_______||___|  |_|\n\nVersion Incomplete\n");
 
 runApp();
 
