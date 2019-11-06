@@ -46,7 +46,7 @@ async function showEmployeeSummary() {
 };
 
 // Called inside inquirers to check that the user isn't just trying to fill spots with empty space
-async function confirmStringInput (input) {
+async function confirmStringInput(input) {
     if ((input.trim() != "") && (input.trim().length <= 30)) {
         return true;
     }
@@ -223,7 +223,18 @@ async function addRole() {
 
 // Add a new department to the database
 async function addDepartment() {
-
+    inquirer.prompt([
+        {
+            name: "depName",
+            type: "input",
+            message: "Enter new department:",
+            validate: confirmStringInput
+        }
+    ]).then(answers => {
+        db.query("INSERT INTO department (name) VALUES (?)", [answers.depName]);
+        console.log("\x1b[32m", `${answers.depName} was added to departments.`);
+        runApp();
+    })
 };
 
 function editEmployeeOptions() {
@@ -232,17 +243,25 @@ function editEmployeeOptions() {
         type: "list",
         message: "What would you like to update?",
         choices: [
+            "Add A New Employee",
             "Change Employee Role",
             "Change Employee Manager",
+            "Remove An Employee",
             "Return To Main Menu"
         ]
     }).then(response => {
         switch (response.editChoice) {
+            case "Add A New Employee":
+                addEmployee();
+                break;
             case "Change Employee Role":
                 updateRole();
                 break;
             case "Change Employee Manager":
                 updateManager();
+                break;
+            case "Remove An Employee":
+                removeEmployee();
                 break;
             case "Return To Main Menu":
                 runApp();
@@ -259,9 +278,7 @@ function runApp() {
         message: "What would you like to do?",
         choices: [
             "View All Employees",
-            "Add A New Employee",
             "Edit Employeee Info",
-            "Remove An Employee",
             "Add A New Role",
             "Add A New Department"
         ]
@@ -270,14 +287,8 @@ function runApp() {
             case "View All Employees":
                 showEmployeeSummary();
                 break;
-            case "Add A New Employee":
-                addEmployee();
-                break;
             case "Edit Employeee Info":
                 editEmployeeOptions();
-                break;
-            case "Remove An Employee":
-                removeEmployee();
                 break;
             case "Add A New Role":
                 addRole();
