@@ -12,3 +12,5 @@ To begin the project, I created a separate sql file, seed.sql, containing sample
 
 ## Challenges
 The challenges started right away with SQL. While joining the three tables was relatively simple, figuring out how to join a new column with the manager's name was not. I wanted to put the manager's first and last names together into one column, and I was able to include this by using the CONCAT method. I also found out I could call the employee table again by using a different variable name, and using this trick I was able to include the managers' names to the table. Testing the SQL code inside MySQL was extremely important in this step as it helped me see my own errors.
+
+For the update employee manager function, I wanted to limit the user's selection such that an employee could not be the manager of themselves. While a validation could achieve this purpose, it would be more beneficial to the end user to not see the selected employee's name at all in the list of possible managers. My solution was to nest a second inquirer which would use a modified array that removes the selected employee from the list of options.
