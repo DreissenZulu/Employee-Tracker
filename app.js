@@ -42,7 +42,7 @@ async function showEmployeeSummary() {
         console.table(res);
         runApp();
     });
-}
+};
 
 async function addEmployee() {
     let positions = await db.query('SELECT id, title FROM role');
@@ -80,7 +80,15 @@ async function addEmployee() {
             console.log(`${answers.firstName} was added to the employee database!`);
             runApp();
         });
-}
+};
+
+async function removeEmployee() {
+
+};
+
+async function updateManager() {
+
+};
 
 function runApp() {
     inquirer
@@ -105,6 +113,7 @@ function runApp() {
                     addEmployee();
                     break;
                 case "Update Employee Info":
+
                     break;
                 case "Remove An Employee":
                     break;
