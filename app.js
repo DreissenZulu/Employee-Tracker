@@ -185,7 +185,7 @@ async function updateRole() {
         }
         runApp();
     })
-}
+};
 
 // Add a new role to the database
 async function addRole() {
@@ -223,9 +223,10 @@ async function addRole() {
     })
 };
 
+// Remove a role from the database
 async function removeRole() {
     let roles = await db.query('SELECT id, title FROM role');
-    roles.push({ id: null, name: "Cancel" });
+    roles.push({ id: null, title: "Cancel" });
 
     inquirer.prompt([
         {
@@ -260,6 +261,7 @@ async function addDepartment() {
     })
 };
 
+// Remove a department from the database
 async function removeDepartment() {
     let departments = await db.query('SELECT id, name FROM department');
     departments.push({ id: null, name: "Cancel" });
@@ -313,7 +315,7 @@ function editEmployeeOptions() {
                 break;
         }
     })
-}
+};
 
 // Main interface loop. Called after pretty much every function completes
 function runApp() {
