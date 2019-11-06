@@ -36,6 +36,7 @@ const db = new Database({
     database: "employeeDB"
 });
 
+// Builds complete employee table
 async function showEmployeeSummary() {
     console.log(' ');
     await db.query('SELECT e.id, e.first_name AS First_Name, e.last_name AS Last_Name, title AS Title, salary AS Salary, name AS Department, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role r ON e.role_id = r.id INNER JOIN department d ON r.department_id = d.id', (err, res) => {
@@ -115,7 +116,7 @@ async function removeEmployee() {
     })
 };
 
-// Change the employee's manager
+// Change the employee's manager. Also prevents employee from being their own manager
 async function updateManager() {
     let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
     employees.push({ id: null, name: "Cancel" });
@@ -156,6 +157,7 @@ async function updateManager() {
     })
 };
 
+// Updates the selected employee's role
 async function updateRole() {
     let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
     employees.push({ id: null, name: "Cancel" });
@@ -237,6 +239,7 @@ async function addDepartment() {
     })
 };
 
+// Options to make changes to employees specifically
 function editEmployeeOptions() {
     inquirer.prompt({
         name: "editChoice",
@@ -300,6 +303,7 @@ function runApp() {
     });
 }
 
+// Title screen on app start. Nice ASCII art lol
 console.log("_______  __   __  _______    _______  ______    _______  _______  ___   _  _______  ______\n|       ||  |_|  ||       |  |       ||    _ |  |   _   ||       ||   | | ||       ||    _ |\n|       ||       ||  _____|  |_     _||   | ||  |  |_|  ||       ||   |_| ||    ___||   | ||\n|       ||       || |_____     |   |  |   |_||_ |       ||       ||      _||   |___ |   |_||_ \n|      _||       ||_____  |    |   |  |    __  ||       ||      _||     |_ |    ___||    __  |\n|     |_ | ||_|| | _____| |    |   |  |   |  | ||   _   ||     |_ |    _  ||   |___ |   |  | |\n|_______||_|   |_||_______|    |___|  |___|  |_||__| |__||_______||___| |_||_______||___|  |_|\n\nVersion Incomplete\n");
 
 runApp();
