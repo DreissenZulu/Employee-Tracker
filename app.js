@@ -46,6 +46,7 @@ async function showEmployeeSummary() {
     });
 };
 
+// Builds a table which shows existing roles and their departments
 async function showRoleSummary() {
     console.log(' ');
     await db.query('SELECT r.id, title, salary, name AS department FROM role r LEFT JOIN department d ON department_id = d.id', (err, res) => {
@@ -55,6 +56,7 @@ async function showRoleSummary() {
     })
 };
 
+// Builds a table which shows existing departments
 async function showDepartments() {
     console.log(' ');
     await db.query('SELECT id, name AS department FROM department', (err, res) => {
@@ -241,6 +243,51 @@ async function addRole() {
     })
 };
 
+async function updateRole() {
+    let roles = await db.query('SELECT id, title FROM role');
+    roles.push({ id: null, title: "Cancel" });
+    let departments = await db.query('SELECT id, name FROM department');
+
+    inquirer.prompt([
+        {
+            name: "roleName",
+            type: "list",
+            message: "Update which role?",
+            choices: roles.map(obj => obj.title)
+        }
+    ]).then(response => {
+        if (response.roleName == "Cancel") {
+            runApp();
+            return;
+        }
+        inquirer.prompt([
+            {
+                name: "salaryNum",
+                type: "input",
+                message: "Enter role's salary:",
+                validate: input => {
+                    if (!isNaN(input)) {
+                        return true;
+                    }
+                    return "Please enter a valid number."
+                }
+            },
+            {
+                name: "roleDepartment",
+                type: "list",
+                message: "Choose the role's department:",
+                choices: departments.map(obj => obj.name)
+            }
+        ]).then(answers => {
+            let depID = departments.find(obj => obj.name === answers.roleDepartment).id
+            let roleID = roles.find(obj => obj.title === response.roleName).id
+            db.query("UPDATE role SET title=?, salary=?, department_id=? WHERE id=?", [response.roleName, answers.salaryNum, depID, roleID]);
+            console.log("\x1b[32m", `${response.roleName} was updated.`);
+            runApp();
+        })
+    })
+};
+
 // Remove a role from the database
 async function removeRole() {
     let roles = await db.query('SELECT id, title FROM role');
@@ -335,6 +382,7 @@ function editEmployeeOptions() {
     })
 };
 
+// Options to make changes to roles
 function editRoleOptions() {
     inquirer.prompt({
         name: "editRoles",
@@ -362,8 +410,9 @@ function editRoleOptions() {
                 break;
         }
     })
-}
+};
 
+// Options to make changes to departments
 function editDepartmentOptions() {
     inquirer.prompt({
         name: "editDeps",
@@ -388,7 +437,7 @@ function editDepartmentOptions() {
                 break;
         }
     })
-}
+};
 
 // Main interface loop. Called after pretty much every function completes
 function runApp() {
