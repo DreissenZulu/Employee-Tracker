@@ -46,6 +46,24 @@ async function showEmployeeSummary() {
     });
 };
 
+async function showRoleSummary() {
+    console.log(' ');
+    await db.query('SELECT r.id, title, salary, name AS department FROM role r LEFT JOIN department d ON department_id = d.id', (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        runApp();
+    })
+};
+
+async function showDepartments() {
+    console.log(' ');
+    await db.query('SELECT id, name AS department FROM department', (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        runApp();
+    })
+};
+
 // Called inside inquirers to check that the user isn't just trying to fill spots with empty space
 async function confirmStringInput(input) {
     if ((input.trim() != "") && (input.trim().length <= 30)) {
@@ -326,9 +344,13 @@ function runApp() {
         choices: [
             "View All Employees",
             "Edit Employeee Info",
+            "View Roles",
             "Add A New Role",
+            "Update A Role",
             "Remove A Role",
+            "View Departments",
             "Add A New Department",
+            "Update A Department",
             "Remove A Department"
         ]
     }).then(responses => {
@@ -339,12 +361,18 @@ function runApp() {
             case "Edit Employeee Info":
                 editEmployeeOptions();
                 break;
+            case "View Roles":
+                showRoleSummary();
+                break;
             case "Add A New Role":
                 addRole();
                 break;
             case "Remove A Role":
                 removeRole();
-                break;    
+                break;
+            case "View Departments":
+                showDepartments();
+                break;
             case "Add A New Department":
                 addDepartment();
                 break;
