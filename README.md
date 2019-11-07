@@ -1,6 +1,9 @@
 # Unit 12 MySQL Employee Tracker
 CLI Content Management System to manage a company's employees. The application links to an SQL database and allows users to view and manage employee records from the command line interface in a more user friendly environment.
 
+## Sample Usage
+![](usage_example.gif)
+
 ## Approach
 Backend development, especially involving databases is a new concept to me. Breaking down the project I sought to complete the following objectives:
 1. Get the SQL database and return it as a table in the command line by using linkages
