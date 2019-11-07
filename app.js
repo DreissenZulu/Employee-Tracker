@@ -243,6 +243,7 @@ async function addRole() {
     })
 };
 
+// Updates a role on the database
 async function updateRole() {
     let roles = await db.query('SELECT id, title FROM role');
     roles.push({ id: null, title: "Cancel" });
@@ -420,7 +421,6 @@ function editDepartmentOptions() {
         message: "What would you like to update?",
         choices: [
             "Add A New Department",
-            "Update A Department",
             "Remove A Department",
             "Return To Main Menu"
         ]
