@@ -176,7 +176,7 @@ async function updateManager() {
 };
 
 // Updates the selected employee's role
-async function updateRole() {
+async function updateEmployeeRole() {
     let employees = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee');
     employees.push({ id: null, name: "Cancel" });
     let roles = await db.query('SELECT id, title FROM role');
@@ -320,7 +320,7 @@ function editEmployeeOptions() {
                 addEmployee();
                 break;
             case "Change Employee Role":
-                updateRole();
+                updateEmployeeRole();
                 break;
             case "Change Employee Manager":
                 updateManager();
@@ -335,6 +335,61 @@ function editEmployeeOptions() {
     })
 };
 
+function editRoleOptions() {
+    inquirer.prompt({
+        name: "editRoles",
+        type: "list",
+        message: "What would you like to update?",
+        choices: [
+            "Add A New Role",
+            "Update A Role",
+            "Remove A Role",
+            "Return To Main Menu"
+        ]
+    }).then(responses => {
+        switch (responses.editRoles) {
+            case "Add A New Role":
+                addRole();
+                break;
+            case "Update A Role":
+                updateRole();
+                break;
+            case "Remove A Role":
+                removeRole();
+                break;
+            case "Return To Main Menu":
+                runApp();
+                break;
+        }
+    })
+}
+
+function editDepartmentOptions() {
+    inquirer.prompt({
+        name: "editDeps",
+        type: "list",
+        message: "What would you like to update?",
+        choices: [
+            "Add A New Department",
+            "Update A Department",
+            "Remove A Department",
+            "Return To Main Menu"
+        ]
+    }).then(responses => {
+        switch (responses.editDeps) {
+            case "Add A New Department":
+                addDepartment();
+                break;
+            case "Remove A Department":
+                removeDepartment();
+                break;
+            case "Return To Main Menu":
+                runApp();
+                break;
+        }
+    })
+}
+
 // Main interface loop. Called after pretty much every function completes
 function runApp() {
     inquirer.prompt({
@@ -345,13 +400,9 @@ function runApp() {
             "View All Employees",
             "Edit Employeee Info",
             "View Roles",
-            "Add A New Role",
-            "Update A Role",
-            "Remove A Role",
+            "Edit Roles",
             "View Departments",
-            "Add A New Department",
-            "Update A Department",
-            "Remove A Department"
+            "Edit Departments"
         ]
     }).then(responses => {
         switch (responses.mainmenu) {
@@ -364,20 +415,14 @@ function runApp() {
             case "View Roles":
                 showRoleSummary();
                 break;
-            case "Add A New Role":
-                addRole();
-                break;
-            case "Remove A Role":
-                removeRole();
+            case "Edit Roles":
+                editRoleOptions();
                 break;
             case "View Departments":
                 showDepartments();
                 break;
-            case "Add A New Department":
-                addDepartment();
-                break;
-            case "Remove A Department":
-                removeDepartment();
+            case "Edit Departments":
+                editDepartmentOptions();
                 break;
         }
     });
